@@ -37,7 +37,7 @@
          -->
 
          <!--Panorama control-->
-        <phone:Panorama Title="my application">
+        <phone:Panorama Title="Coba Git">
             <phone:Panorama.Background>
                 <ImageBrush ImageSource="/CobaGit;component/Assets/PanoramaBackground.png"/>
             </phone:Panorama.Background>
