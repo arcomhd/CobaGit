@@ -199,7 +199,6 @@ namespace WPControls
                                          oneChild is CalendarItem &&
                                          ((CalendarItem)oneChild).ItemDate == dt
                                      select (CalendarItem)oneChild;
-                        //System.Diagnostics.Debug.WriteLine("c-->" + dt.ToShortDateString());
                         query2.ToList().ForEach(one => one.IsInSelected = true);
                     }
                 }
@@ -1084,9 +1083,20 @@ namespace WPControls
                         startColumn += 7;
                     }
                 }
+
+                var daysPrevMonth = (int)Math.Floor(startOfMonth.Subtract(startOfMonth.AddMonths(-1)).TotalDays);
+                System.Diagnostics.Debug.WriteLine("dp->"+daysPrevMonth);
+                var daysNextMonth = (int)Math.Floor(startOfMonth.AddMonths(2).Subtract(startOfMonth.AddMonths(1)).TotalDays);
+                System.Diagnostics.Debug.WriteLine("dn->" + daysNextMonth);
                 var daysInMonth = (int)Math.Floor(startOfMonth.AddMonths(1).Subtract(startOfMonth).TotalDays);
+                System.Diagnostics.Debug.WriteLine("d->" +daysInMonth);
                 var addedDays = 0;
+                var count=0;
+                bool stopnext = false;
+                var addedPrevDays = 0;
+                var addedNextDays = 0;
                 int lastWeekNumber = 0;
+                int locdate = 0;
                 for (int rowCount = 1; rowCount <= RowCount; rowCount++)
                 {
                     for (var columnCount = 1; columnCount < ColumnCount; columnCount++)
@@ -1095,11 +1105,26 @@ namespace WPControls
                                                   where oneChild is CalendarItem &&
                                                   ((CalendarItem)oneChild).Tag.ToString() == string.Concat(rowCount.ToString(CultureInfo.InvariantCulture), ":", columnCount.ToString(CultureInfo.InvariantCulture))
                                                   select oneChild).First();
+
                         if (rowCount == 1 && columnCount < startColumn)
                         {
-                            item.Visibility = Visibility.Collapsed;
+                            item.Visibility = Visibility.Visible;
+                            locdate = 0;
                         }
-                        else if (addedDays < daysInMonth)
+                        else 
+                        if (addedDays < daysInMonth)
+                        {
+                            item.Visibility = Visibility.Visible;
+                            locdate = 1;
+                        }
+                        else 
+                        if (columnCount < ColumnCount)
+                        {
+                            item.Visibility = Visibility.Visible;
+                            locdate = 2;
+                        }
+                        else 
+                        if (stopnext == false)
                         {
                             item.Visibility = Visibility.Visible;
                         }
@@ -1115,7 +1140,20 @@ namespace WPControls
 
                         if (item.Visibility == Visibility.Visible)
                         {
-                            item.ItemDate = startOfMonth.AddDays(addedDays);
+                            if (locdate == 0)
+                            {
+                                item.ItemDate = startOfMonth.AddDays(-startColumn).AddDays(1).AddDays(count);
+                            }
+                            else
+                            if (locdate == 1)
+                            {
+                                item.ItemDate = startOfMonth.AddDays(addedDays);
+                            }
+                            else
+                            {
+                                item.ItemDate = startOfMonth.AddDays(daysInMonth).AddDays(addedNextDays);
+                            }
+
                             if (SelectedDate == DateTime.MinValue && item.ItemDate == DateTime.Today)
                             {
                                 SelectedDate = item.ItemDate;
@@ -1135,8 +1173,29 @@ namespace WPControls
                                     item.IsSelected = false;
                                 }
                             }
-                            addedDays += 1;
-                            item.DayNumber = addedDays;
+
+                            if(locdate==0)
+                            {
+                                count++;
+                                addedPrevDays =(daysPrevMonth-startColumn+1)+count;
+                                item.DayNumber = addedPrevDays;
+                                item.PrevNextDay = true;
+                            }
+                            else 
+                            if(locdate==1)
+                            {
+                                addedDays += 1;
+                                item.DayNumber = addedDays;
+                                item.PrevNextDay = false;
+                            }
+                            else
+                            {
+                                addedNextDays += 1;
+                                item.DayNumber = addedNextDays;
+                                item.PrevNextDay = true;
+                            }
+
+                            item.SetBorderColor();
                             item.SetBackcolor();
                             item.SetForecolor();
 
@@ -1156,6 +1215,7 @@ namespace WPControls
                                 {
                                     weekNumber = rowCount;
                                 }
+
                                 if (weekItem != null)
                                 {
                                     weekItem.WeekNumber = weekNumber;
@@ -1172,6 +1232,7 @@ namespace WPControls
                             }
                         }
                     }
+                    
                 }
             }
         }

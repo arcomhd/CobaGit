@@ -68,6 +68,12 @@ namespace WPControls
             }
         }
 
+        internal bool PrevNextDay
+        {
+            get { return (bool)GetValue(PrevNextDayProperty); }
+            set { SetValue(PrevNextDayProperty, value); }
+        }
+
         internal bool IsInSelected
         {
             get { return (bool)GetValue(IsInSelectedProperty); }
@@ -85,6 +91,9 @@ namespace WPControls
 
         internal static readonly DependencyProperty IsInSelectedProperty =
             DependencyProperty.Register("IsInSelected", typeof(bool), typeof(CalendarItem), new PropertyMetadata(false, OnIsSelectedChanged));
+
+        internal static readonly DependencyProperty PrevNextDayProperty =
+           DependencyProperty.Register("PrevNextDayProperty", typeof(bool), typeof(CalendarItem), new PropertyMetadata(false, OnIsSelectedChanged));
 
 
         private static void OnIsSelectedChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
@@ -164,6 +173,7 @@ namespace WPControls
             if (_owningCalendar.ColorConverter != null && IsConverterNeeded())
             {
                 BorderBrush = _owningCalendar.ColorConverter.Convert(ItemDate, IsSelected, defaultBrush, BrushType.BorderBrush);
+                
             }
             else
             {
@@ -200,14 +210,39 @@ namespace WPControls
 
         internal void SetForecolor()
         {
+            string abu = "#aaaaaa";
+            var Abu = new SolidColorBrush(Color.FromArgb(
+                Convert.ToByte("ff", 16),
+                Convert.ToByte(abu.Substring(1, 2), 16),
+                Convert.ToByte(abu.Substring(3, 2), 16),
+                Convert.ToByte(abu.Substring(5, 2), 16)
+            ));
+
             var defaultBrush = Application.Current.Resources["PhoneForegroundBrush"] as Brush;
+            //var defaultBrush = new SolidColorBrush(Colors.Black);
             if (_owningCalendar.ColorConverter != null && IsConverterNeeded())
             {
-                Foreground = _owningCalendar.ColorConverter.Convert(ItemDate, IsSelected, defaultBrush, BrushType.Foreground);
+                if (PrevNextDay == true)
+                {
+                    Foreground = _owningCalendar.ColorConverter.Convert(ItemDate, IsSelected, Abu, BrushType.Foreground);
+                }
+                else
+                {
+                    Foreground = _owningCalendar.ColorConverter.Convert(ItemDate, IsSelected, defaultBrush, BrushType.Foreground);
+                }
+               
             }
             else
             {
-                Foreground = defaultBrush;
+                if (PrevNextDay == true)
+                {
+                    Foreground = Abu;
+                }
+                else
+                {
+                    Foreground =defaultBrush;
+                }
+               
             }
         }
 

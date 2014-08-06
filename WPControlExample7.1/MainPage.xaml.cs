@@ -47,13 +47,21 @@ namespace WPControlExample7._1
             Debug.WriteLine("Cal_SelectionChanged fired.  New date is " + e.SelectedDate.ToString());
             var count = (e.SelectedDate - DateTime.Today).TotalDays;
             Debug.WriteLine("Calcoun " +count);
-            DateTime[] ldt = new DateTime[(int)count];
-            for (int i = 0; i < (int)count;i++ )
+            if (count > 0)
             {
-                ldt[i] = DateTime.Today.AddDays(i);
+                DateTime[] ldt = new DateTime[(int)count];
+                for (int i = 0; i < (int)count; i++)
+                {
+                    ldt[i] = DateTime.Today.AddDays(i);
+                }
+                this.Cal.SelectedDates = ldt;
             }
-            
-            this.Cal.SelectedDates = ldt;
+            else
+            {
+                DateTime[] ldt = new DateTime[1];
+                ldt[0] = DateTime.Today;
+                this.Cal.SelectedDates = ldt;
+            }
         }
 
         private void Cal_DateClicked(object sender, WPControls.SelectionChangedEventArgs e)

@@ -138,10 +138,10 @@
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
                                 <Rectangle Grid.RowSpan="2" x:Name="BackgroundRectangle" Fill="{TemplateBinding Background}" />
-                                <TextBlock 
+                                <TextBlock
                                     x:Name="DayNumberBlock"
                                     Text="{Binding Path=DayNumber, RelativeSource={RelativeSource TemplatedParent}}" 
-                                    Foreground="#000000" 
+                                    Foreground="{TemplateBinding Foreground}" 
                                     FontWeight="ExtraBold"
                                     HorizontalAlignment="Center" 
                                     VerticalAlignment="Center" 
